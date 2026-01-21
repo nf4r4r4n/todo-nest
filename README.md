@@ -2,6 +2,22 @@
 
 The purpose of this project is to understand the core functionality of the framework NestJS.
 
+## Setup
+
+To setup before starting the project, there are some options that need to be set up.
+
+- Environment variable in the **.env** file:
+
+```sh
+DATABASE_URL="file:./todos.db" # As we are using sqlite
+```
+
+- Run the migrations for SQL:
+
+```sh
+npx prisma migrate dev --name init
+```
+
 ## Conception & Purpose
 
 There are some basic endpoints for simple operations to manage todos such as **CRUD**.
@@ -36,3 +52,28 @@ model Todos {
 To simplify the understanding of the code, each function, class and instructions will be commented and explained as necessary.
 
 Good luck and enjoy XD !
+
+## Starting project
+
+You can start project by running:
+
+```sh
+npm run start # Starting project after the build
+npm run start:dev # Starting project in development mode
+```
+
+## Implemented features
+
+- [ ] **/todos** - **POST**: Create a todo
+
+- [ ] **/todos** - **GET**: Get the list of todos
+
+- [ ] **/todos/:id** - **GET**: Get the specific todo with "**_id_**"
+
+- [ ] **/todos/:id** - **PATCH**: Update partially the specific todo with "**_id_**"
+
+- [ ] **/todos/:id** - **DELETE**: Delete the specific todo with "**_id_**"
+
+- [ ] Swagger documentation
+
+- [ ] Securization: Secure the API with a key
