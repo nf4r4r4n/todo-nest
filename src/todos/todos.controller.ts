@@ -6,58 +6,52 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { TodosService } from './todos.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { ErrorHandler } from 'src/utils/error-handler.util';
+import { ApiBody } from '@nestjs/swagger';
+import { FilterTodoDto } from './dto/filter-todo.dto';
 
 @Controller('todos')
 export class TodosController {
-  constructor(private readonly todosService: TodosService) {}
+  constructor(private readonly todosService: TodosService) { }
 
+  @ApiBody({ type: CreateTodoDto })
   @Post()
-  public create(@Body() createTodoDto: CreateTodoDto) {
-    try {
-      return this.todosService.create(createTodoDto);
-    } catch (error) {
-      return new ErrorHandler(error);
-    }
+  public async create(@Body() createTodoDto: CreateTodoDto) {
+    return await this.todosService.create(createTodoDto);
   }
 
   @Get()
-  public findAll() {
-    try {
-      return this.todosService.findAll();
-    } catch (error) {
-      return new ErrorHandler(error);
-    }
+  public async findAll(@Query() filterTodoDto: FilterTodoDto) {
+    return await this.todosService.findAll(filterTodoDto);
   }
 
   @Get(':id')
-  public findOne(@Param('id') id: string) {
-    try {
-      return this.todosService.findOne(+id);
-    } catch (error) {
-      return new ErrorHandler(error);
-    }
+  public async findOne(@Param('id') id: string) {
+    return await this.todosService.findOne(+id);
   }
 
+  @ApiBody({ type: UpdateTodoDto })
   @Patch(':id')
-  public update(@Param('id') id: string, @Body() updateTodoDto: UpdateTodoDto) {
-    try {
-      return this.todosService.update(+id, updateTodoDto);
-    } catch (error) {
-      return new ErrorHandler(error);
-    }
+  public async update(@Param('id') id: string, @Body() updateTodoDto: UpdateTodoDto) {
+    return await this.todosService.update(+id, updateTodoDto);
+  }
+
+  @Patch('check/:id')
+  public async check(@Param('id') id: string) {
+    return await this.todosService.update(+id, { is_done: true });
   }
 
   @Delete(':id')
-  public remove(@Param('id') id: string) {
-    try {
-      return this.todosService.remove(+id);
-    } catch (error) {
-      return new ErrorHandler(error);
-    }
+  public async remove(@Param('id') id: string) {
+    return await this.todosService.remove(+id);
+  }
+
+  @Delete()
+  public async removeAll() {
+    return await this.todosService.removeAll();
   }
 }

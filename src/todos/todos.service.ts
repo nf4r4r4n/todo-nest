@@ -1,48 +1,52 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { FilterTodoDto } from './dto/filter-todo.dto';
 
 @Injectable()
 export class TodosService {
-  public create(createTodoDto: CreateTodoDto) {
-    try {
-      console.log({ createTodoDto });
-      return 'This action adds a new todo';
-    } catch (error) {
-      throw error;
-    }
+  constructor(private readonly prisma: PrismaService) { }
+
+  public async create(createTodoDto: CreateTodoDto) {
+    return await this.prisma.todos.create({
+      data: {
+        ...createTodoDto,
+        created_at: new Date(),
+      }
+    })
   }
 
-  public findAll() {
-    try {
-      return `This action returns all todos`;
-    } catch (error) {
-      throw error;
-    }
+  public async findAll(filterTodoDto: FilterTodoDto) {
+    return await this.prisma.todos.findMany({
+      where: { ...filterTodoDto }
+    });
   }
 
-  public findOne(id: number) {
-    try {
-      return `This action returns a #${id} todo`;
-    } catch (error) {
-      throw error;
-    }
+  public async findOne(id: number) {
+    const todo = await this.prisma.todos.findUnique({ where: { id } });
+    if (!todo) throw new NotFoundException();
+    return todo;
   }
 
-  public update(id: number, updateTodoDto: UpdateTodoDto) {
-    try {
-      console.log({ updateTodoDto });
-      return `This action updates a #${id} todo`;
-    } catch (error) {
-      throw error;
-    }
+  public async update(id: number, updateTodoDto: UpdateTodoDto) {
+    const todo = await this.prisma.todos.findUnique({ where: { id } });
+    if (!todo) throw new NotFoundException();
+    return this.prisma.todos.update({
+      where: { id },
+      data: {
+        ...updateTodoDto
+      }
+    });
   }
 
-  public remove(id: number) {
-    try {
-      return `This action removes a #${id} todo`;
-    } catch (error) {
-      throw error;
-    }
+  public async remove(id: number) {
+    const todo = await this.prisma.todos.findUnique({ where: { id } });
+    if (!todo) throw new NotFoundException();
+    return await this.prisma.todos.delete({ where: { id } });
+  }
+
+  public async removeAll() {
+    return await this.prisma.todos.deleteMany({});
   }
 }
