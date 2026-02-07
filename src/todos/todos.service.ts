@@ -18,8 +18,17 @@ export class TodosService {
   }
 
   public async findAll(filterTodoDto: FilterTodoDto) {
+    const { ascending, is_done, search } = filterTodoDto;
     return await this.prisma.todos.findMany({
-      where: { ...filterTodoDto }
+      where: {
+        is_done,
+        description: {
+          contains: search
+        }
+      },
+      orderBy: {
+        created_at: ascending ? "asc" : "desc",
+      }
     });
   }
 
